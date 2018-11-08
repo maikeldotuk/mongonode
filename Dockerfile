@@ -4,17 +4,17 @@ FROM ubuntu:xenial
 RUN groupadd -r mongodb && useradd -r -g mongodb mongodb
 
 RUN apt-get update \
+        && apt-get install -y curl \
+        && curl -sL https://deb.nodesource.com/setup_11.x | bash - \
+        && apt-get install -y nodejs
+
+
+RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		ca-certificates \
 		jq \
 		numactl \
-	&& rm -rf /var/lib/apt/lists/* 
-
-RUN apt-get update \
-	&& apt-get install -y curl \
-	&& curl -sL https://deb.nodesource.com/setup_11.x | bash - \
-	&& apt-get install -y nodejs
-
+	&& rm -rf /var/lib/apt/lists/*
 
 # grab gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
 ENV GOSU_VERSION 1.10
@@ -72,7 +72,7 @@ ARG MONGO_REPO=repo.mongodb.org
 ENV MONGO_PACKAGE=${MONGO_PACKAGE} MONGO_REPO=${MONGO_REPO}
 
 ENV MONGO_MAJOR 4.0
-ENV MONGO_VERSION 4.0.3
+ENV MONGO_VERSION 4.0.4
 
 RUN echo "deb http://$MONGO_REPO/apt/ubuntu xenial/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list"
 
@@ -97,6 +97,3 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 27017
 CMD ["mongod"]
-
-
-
